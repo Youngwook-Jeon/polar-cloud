@@ -3,7 +3,7 @@ on: push
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: Youngwook-Jeon/catalog-service
+  IMAGE_NAME: Youngwook-Jeon/config-service
   VERSION: latest
 
 jobs:
