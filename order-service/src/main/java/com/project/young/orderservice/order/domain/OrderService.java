@@ -17,18 +17,18 @@ public class OrderService {
 
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
-    private final OrderRepository orderRepository;
     private final BookClient bookClient;
+    private final OrderRepository orderRepository;
     private final StreamBridge streamBridge;
 
-    public OrderService(OrderRepository orderRepository, BookClient bookClient, StreamBridge streamBridge) {
-        this.orderRepository = orderRepository;
+    public OrderService(BookClient bookClient, StreamBridge streamBridge, OrderRepository orderRepository) {
         this.bookClient = bookClient;
+        this.orderRepository = orderRepository;
         this.streamBridge = streamBridge;
     }
 
-    public Flux<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public Flux<Order> getAllOrders(String userId) {
+        return orderRepository.findAllByCreatedBy(userId);
     }
 
     @Transactional
@@ -45,8 +45,18 @@ public class OrderService {
                 book.price(), quantity, OrderStatus.ACCEPTED);
     }
 
-    public static Order buildRejectedOrder(String isbn, int quantity) {
-        return Order.of(isbn, null, null, quantity, OrderStatus.REJECTED);
+    public static Order buildRejectedOrder(String bookIsbn, int quantity) {
+        return Order.of(bookIsbn, null, null, quantity, OrderStatus.REJECTED);
+    }
+
+    private void publishOrderAcceptedEvent(Order order) {
+        if (!order.status().equals(OrderStatus.ACCEPTED)) {
+            return;
+        }
+        var orderAcceptedMessage = new OrderAcceptedMessage(order.id());
+        log.info("Sending order accepted event with id: {}", order.id());
+        var result = streamBridge.send("acceptOrder-out-0", orderAcceptedMessage);
+        log.info("Result of sending data for order with id {}: {}", order.id(), result);
     }
 
     public Flux<Order> consumeOrderDispatchedEvent(Flux<OrderDispatchedMessage> flux) {
@@ -66,17 +76,10 @@ public class OrderService {
                 OrderStatus.DISPATCHED,
                 existingOrder.createdDate(),
                 existingOrder.lastModifiedDate(),
+                existingOrder.createdBy(),
+                existingOrder.lastModifiedBy(),
                 existingOrder.version()
         );
     }
 
-    private void publishOrderAcceptedEvent(Order order) {
-        if (!order.status().equals(OrderStatus.ACCEPTED)) {
-            return;
-        }
-        var orderAcceptedMessage = new OrderAcceptedMessage(order.id());
-        log.info("Sending order accepted event with id: {}", order.id());
-        var result = streamBridge.send("acceptOrder-out-0", orderAcceptedMessage);
-        log.info("Result of sending data for order with id {}: {}", order.id(), result);
-    }
 }
