@@ -129,10 +129,10 @@ services:
       # Buildpacks environment variable to enable debug through a socket on port 9888
       - BPL_DEBUG_ENABLED=true
       - BPL_DEBUG_PORT=9888
-      - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
-      - OTEL_SERVICE_NAME=config-service
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
-      - OTEL_METRICS_EXPORTER=none
+      # - JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.24.0.jar
+      # - OTEL_SERVICE_NAME=config-service
+      # - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+      # - OTEL_METRICS_EXPORTER=none
     logging:
       driver: fluentd
       options:
