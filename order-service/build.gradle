@@ -31,6 +31,7 @@ dependencies {
 	implementation 'org.springframework.retry:spring-retry'
 	implementation 'org.yaml:snakeyaml:2.0'
 
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	runtimeOnly 'org.flywaydb:flyway-core'
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'org.postgresql:r2dbc-postgresql'

@@ -27,6 +27,8 @@ dependencies {
 	implementation 'org.springframework.retry:spring-retry'
 	implementation 'org.yaml:snakeyaml:2.0'
 
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
