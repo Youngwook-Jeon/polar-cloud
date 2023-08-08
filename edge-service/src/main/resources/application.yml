@@ -73,16 +73,16 @@ spring:
             - name: CircuitBreaker
               args:
                 name: orderCircuitBreaker
-  session:
-    timeout: 10m
-    redis:
-      namespace: polar:edge
   data:
     redis:
       connect-timeout: 2s
       host: localhost
       port: 6379
       timeout: 1s
+  session:
+    timeout: 10m
+    redis:
+      namespace: polar:edge
   security:
     oauth2:
       client:
@@ -113,14 +113,17 @@ logging:
     circuitbreaker: io.github.resilience4j, org.springframework.cloud.circuitbreaker
   level:
     circuitbreaker: info
-#  pattern:
-#    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+info:
+  system: Polar Bookshop
 
 management:
   endpoints:
     web:
       exposure:
-        include: health, prometheus
+        include: configprops, env, gateway, health, heapdump, info, loggers, mappings, prometheus
   endpoint:
     health:
       show-details: always
@@ -130,6 +133,13 @@ management:
       group:
         readiness:
           include: readinessState,redis
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
   metrics:
     tags:
       application: ${spring.application.name}
